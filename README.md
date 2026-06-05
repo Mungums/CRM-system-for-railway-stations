@@ -67,11 +67,12 @@ CREATE TABLE Routes (
 );
 
 CREATE TABLE RouteDetails (
-  RouteId int PRIMARY KEY NOT NULL,
+  RouteId int NOT NULL,
   StopNumber int NOT NULL,
   StationId int NOT NULL,
   ArrivalTime time DEFAULT NULL,
   DepartureTime time DEFAULT NULL,
+  PRIMARY KEY (RouteId, StopNumber),
   FOREIGN KEY (RouteId) REFERENCES Routes(Id),
   FOREIGN KEY (StationId) REFERENCES Stations(Id)
 );
