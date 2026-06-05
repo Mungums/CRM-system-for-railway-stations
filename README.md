@@ -12,26 +12,36 @@ CREATE TABLE Crews (
   CrewName varchar(100) NOT NULL
 );
 
-CREATE TABLE Personnel (
-  Id int PRIMARY KEY AUTO_INCREMENT NOT NULL,
+CREATE TABLE Trains (
   StationId int NOT NULL,
-  PersonInn varchar(12) NOT NULL,
-  FullName varchar(150) NOT NULL,
-  PositionId int NOT NULL,
-  CrewId int NOT NULL
+  Id int PRIMARY KEY AUTO_INCREMENT NOT NULL,
+  TrainTypeId int NOT NULL,
+  Name varchar(100) DEFAULT NULL
 );
+
+CREATE TABLE Stations (
+  Id int PRIMARY KEY AUTO_INCREMENT NOT NULL,
+  Name varchar(100) NOT NULL,
+  Inn varchar(12) NOT NULL,
+  Address varchar(255) DEFAULT NULL
+);
+
 
 CREATE TABLE Positions (
   Id int PRIMARY KEY AUTO_INCREMENT NOT NULL,
   PositionName varchar(100) NOT NULL
 );
 
-CREATE TABLE RouteDetails (
-  RouteId int NOT NULL,
-  StopNumber int NOT NULL,
+CREATE TABLE Personnel (
+  Id int PRIMARY KEY AUTO_INCREMENT NOT NULL,
   StationId int NOT NULL,
-  ArrivalTime time DEFAULT NULL,
-  DepartureTime time DEFAULT NULL
+  PersonInn varchar(12) NOT NULL,
+  FullName varchar(150) NOT NULL,
+  PositionId int NOT NULL,
+  CrewId int NOT NULL,
+  FOREIGN KEY (StationId) REFERENCES Stations(Id),
+  FOREIGN KEY (PositionId) REFERENCES Positions(Id),
+  FOREIGN KEY (CrewId) REFERENCES Crews(Id)
 );
 
 CREATE TABLE Routes (
@@ -42,26 +52,28 @@ CREATE TABLE Routes (
   ArrivalStationId int NOT NULL,
   DepartureTime time NOT NULL,
   ArrivalTime time NOT NULL,
-  CrewId int NOT NULL
+  CrewId int NOT NULL,
+  FOREIGN KEY (TrainId) REFERENCES Trains(Id),
+  FOREIGN KEY (OwnerStationId) REFERENCES Stations(id),
+  FOREIGN KEY (DepartureStationId) REFERENCES Stations(Id),
+  FOREIGN KEY (ArrivalStationId) REFERENCES Stations(Id),
+  FOREIGN KEY (CrewId) REFERENCES Crews(Id)
 );
 
-CREATE TABLE Stations (
-  Id int PRIMARY KEY AUTO_INCREMENT NOT NULL,
-  Name varchar(100) NOT NULL,
-  Inn varchar(12) NOT NULL,
-  Address varchar(255) DEFAULT NULL
-);
-
-CREATE TABLE Trains (
+CREATE TABLE RouteDetails (
+  RouteId int PRIMARY KEY NOT NULL,
+  StopNumber int NOT NULL,
   StationId int NOT NULL,
-  Id int PRIMARY KEY AUTO_INCREMENT NOT NULL,
-  TrainTypeId int NOT NULL,
-  Name varchar(100) DEFAULT NULL
+  ArrivalTime time DEFAULT NULL,
+  DepartureTime time DEFAULT NULL,
+  FOREIGN KEY (RouteId) REFERENCES Routes(Id),
+  FOREIGN KEY (StationId) REFERENCES Stations(Id)
 );
 
 CREATE TABLE TrainTypes (
   Id int PRIMARY KEY AUTO_INCREMENT NOT NULL,
   TypeName varchar(100) NOT NULL
 );
+
 
 ```
