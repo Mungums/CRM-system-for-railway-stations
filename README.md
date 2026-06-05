@@ -12,11 +12,17 @@ CREATE TABLE Crews (
   CrewName varchar(100) NOT NULL
 );
 
+CREATE TABLE TrainTypes (
+  Id int PRIMARY KEY AUTO_INCREMENT NOT NULL,
+  TypeName varchar(100) NOT NULL
+);
+
 CREATE TABLE Trains (
   StationId int NOT NULL,
   Id int PRIMARY KEY AUTO_INCREMENT NOT NULL,
   TrainTypeId int NOT NULL,
-  Name varchar(100) DEFAULT NULL
+  Name varchar(100) DEFAULT NULL,
+  FOREIGN KEY (TrainTypeId) REFERENCES TrainTypes(Id)
 );
 
 CREATE TABLE Stations (
@@ -69,11 +75,4 @@ CREATE TABLE RouteDetails (
   FOREIGN KEY (RouteId) REFERENCES Routes(Id),
   FOREIGN KEY (StationId) REFERENCES Stations(Id)
 );
-
-CREATE TABLE TrainTypes (
-  Id int PRIMARY KEY AUTO_INCREMENT NOT NULL,
-  TypeName varchar(100) NOT NULL
-);
-
-
 ```
