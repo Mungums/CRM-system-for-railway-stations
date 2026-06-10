@@ -9,7 +9,7 @@ CREATE DATABASE IF NOT EXISTS CRMSystemForRailway DEFAULT CHARACTER SET utf8mb4 
 ```sql
 CREATE TABLE Crews (
   Id int PRIMARY KEY AUTO_INCREMENT NOT NULL,
-  CrewName varchar(100) NOT NULL
+  Name varchar(100) NOT NULL
 );
 
 CREATE TABLE TrainTypes (
@@ -35,7 +35,7 @@ CREATE TABLE Stations (
 
 CREATE TABLE Positions (
   Id int PRIMARY KEY AUTO_INCREMENT NOT NULL,
-  PositionName varchar(100) NOT NULL
+  Name varchar(100) NOT NULL
 );
 
 CREATE TABLE Personnel (
