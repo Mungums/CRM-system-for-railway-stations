@@ -77,5 +77,49 @@ namespace WinFormsApp1.Services
                 return stations;
             }
         }
+
+        public List<RouteModel> GetRouteModels()
+        {
+            var routes = new List<RouteModel>();
+            string query = @"
+        SELECT
+            r.Id,
+            own.Name AS OwnerStationName,
+            t.Name AS TrainName,
+            dep.Name AS DepartureStationName,
+            arr.Name AS ArrivalStationName,
+            r.DepartureTime,
+            r.ArrivalTime,
+            c.Name AS CrewName
+        FROM Routes r
+        LEFT JOIN Stations own ON r.OwnerStationId = own.Id
+        LEFT JOIN Trains t ON r.TrainId = t.Id
+        LEFT JOIN Stations dep ON r.DepartureStationId = dep.Id
+        LEFT JOIN Stations arr ON r.ArrivalStationId = arr.Id
+        LEFT JOIN Crews c ON r.CrewId = c.Id;";
+
+            using (MySqlConnection connection = new MySqlConnection(connectionString))
+            {
+                connection.Open();
+                MySqlCommand command = new MySqlCommand(query, connection);
+                MySqlDataReader reader = command.ExecuteReader();
+
+                while (reader.Read())
+                {
+                    routes.Add(new RouteModel
+                    {
+                        Id = reader["Id"]?.ToString(),
+                        OwnerStationName = reader["OwnerStationName"]?.ToString(),
+                        TrainName = reader["TrainName"]?.ToString(),
+                        DepartureStationName = reader["DepartureStationName"]?.ToString(),
+                        ArrivalStationName = reader["ArrivalStationName"]?.ToString(),
+                        DepartureTime = reader["DepartureTime"]?.ToString(),
+                        ArrivalTime = reader["ArrivalTime"]?.ToString(),
+                        CrewName = reader["CrewName"]?.ToString()
+                    });
+                }
+            }
+            return routes;
+        }
     }
 }

@@ -31,12 +31,14 @@
             flowLayoutPanel1 = new FlowLayoutPanel();
             Employees = new Button();
             Stations = new Button();
+            label1 = new Label();
+            Routes = new Button();
             SuspendLayout();
             // 
             // flowLayoutPanel1
             // 
             flowLayoutPanel1.AutoScroll = true;
-            flowLayoutPanel1.Location = new Point(256, 12);
+            flowLayoutPanel1.Location = new Point(252, 142);
             flowLayoutPanel1.Name = "flowLayoutPanel1";
             flowLayoutPanel1.Size = new Size(800, 350);
             flowLayoutPanel1.TabIndex = 1;
@@ -44,7 +46,7 @@
             // Employees
             // 
             Employees.AutoSize = true;
-            Employees.Location = new Point(123, 434);
+            Employees.Location = new Point(119, 570);
             Employees.Name = "Employees";
             Employees.Size = new Size(120, 35);
             Employees.TabIndex = 2;
@@ -55,7 +57,7 @@
             // Stations
             // 
             Stations.AutoSize = true;
-            Stations.Location = new Point(301, 435);
+            Stations.Location = new Point(307, 570);
             Stations.Name = "Stations";
             Stations.Size = new Size(112, 35);
             Stations.TabIndex = 3;
@@ -63,11 +65,34 @@
             Stations.UseVisualStyleBackColor = true;
             Stations.Click += Stations_Click;
             // 
+            // label1
+            // 
+            label1.AutoSize = true;
+            label1.Location = new Point(609, 47);
+            label1.Name = "label1";
+            label1.Size = new Size(133, 25);
+            label1.TabIndex = 4;
+            label1.Text = "NameDatabase";
+            label1.Click += label1_Click;
+            // 
+            // Routes
+            // 
+            Routes.AutoSize = true;
+            Routes.Location = new Point(494, 570);
+            Routes.Name = "Routes";
+            Routes.Size = new Size(112, 35);
+            Routes.TabIndex = 5;
+            Routes.Text = "Маршруты";
+            Routes.UseVisualStyleBackColor = true;
+            Routes.Click += Routes_Click;
+            // 
             // Form1
             // 
             AutoScaleDimensions = new SizeF(10F, 25F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(1373, 777);
+            Controls.Add(Routes);
+            Controls.Add(label1);
             Controls.Add(Stations);
             Controls.Add(Employees);
             Controls.Add(flowLayoutPanel1);
@@ -82,5 +107,7 @@
         private FlowLayoutPanel flowLayoutPanel1;
         private Button Employees;
         private Button Stations;
+        private Label label1;
+        private Button Routes;
     }
 }
