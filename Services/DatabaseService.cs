@@ -10,6 +10,7 @@ namespace WinFormsApp1.Services
 {
     internal class DatabaseService
     {
+        public string LastError { get; private set;}
         private string connectionString = "server=localhost;user=root;password=;database=CRMSystemForRailway;";
 
         public List<EmployeeModel> GetEmployeeModels()
@@ -121,5 +122,290 @@ namespace WinFormsApp1.Services
             }
             return routes;
         }
+        // Методы для поиска по ID и удаления
+
+        public EmployeeModel GetEmployeeById(int id)
+        {
+            string query = "SELECT Id, FullName FROM Personnel WHERE Id = @id";
+            using (MySqlConnection connection = new MySqlConnection(connectionString))
+            {
+                connection.Open();
+                MySqlCommand cmd = new MySqlCommand(query, connection);
+                cmd.Parameters.AddWithValue("@id", id);
+                using (MySqlDataReader reader = cmd.ExecuteReader())
+                {
+                    if (reader.Read())
+                    {
+                        return new EmployeeModel
+                        {
+                            Id = reader["Id"].ToString(),
+                            FullName = reader["FullName"].ToString()
+                        };
+                    }
+                }
+            }
+            return null;
+        }
+
+        public bool DeleteEmployee(int id)
+        {
+            string query = "DELETE FROM Personnel WHERE Id = @id";
+            using (MySqlConnection connection = new MySqlConnection(connectionString))
+            {
+                connection.Open();
+                MySqlCommand cmd = new MySqlCommand(query, connection);
+                cmd.Parameters.AddWithValue("@id", id);
+                return cmd.ExecuteNonQuery() > 0;
+            }
+        }
+
+        public StationModel GetStationById(int id)
+        {
+            string query = "SELECT Id, Name FROM Stations WHERE Id = @id";
+            using (MySqlConnection connection = new MySqlConnection(connectionString))
+            {
+                connection.Open();
+                MySqlCommand cmd = new MySqlCommand(query, connection);
+                cmd.Parameters.AddWithValue("@id", id);
+                using (MySqlDataReader reader = cmd.ExecuteReader())
+                {
+                    if (reader.Read())
+                    {
+                        return new StationModel
+                        {
+                            Id = reader["Id"].ToString(),
+                            Name = reader["Name"].ToString()
+                        };
+                    }
+                }
+            }
+            return null;
+        }
+
+        public bool DeleteStation(int id)
+        {
+            string query = "DELETE FROM Stations WHERE Id = @id";
+            using (MySqlConnection connection = new MySqlConnection(connectionString))
+            {
+                connection.Open();
+                MySqlCommand cmd = new MySqlCommand(query, connection);
+                cmd.Parameters.AddWithValue("@id", id);
+                try
+                { 
+                    return cmd.ExecuteNonQuery() > 0;
+                } catch (MySqlException ex)
+                {
+                    LastError = "Невозможно удалить станцию: на нее ссылаются записи из других таблиц";
+                    return false;
+                }
+            }
+        }
+
+        public RouteModel GetRouteById(int id)
+        {
+            string query = @"
+        SELECT
+            r.Id,
+            t.Name AS TrainName,
+            dep.Name AS DepartureStationName,
+            arr.Name AS ArrivalStationName
+        FROM Routes r
+        LEFT JOIN Trains t ON r.TrainId = t.Id
+        LEFT JOIN Stations dep ON r.DepartureStationId = dep.Id
+        LEFT JOIN Stations arr ON r.ArrivalStationId = arr.Id
+        WHERE r.Id = @id;";
+
+            using (MySqlConnection connection = new MySqlConnection(connectionString))
+            {
+                connection.Open();
+                MySqlCommand cmd = new MySqlCommand(query, connection);
+                cmd.Parameters.AddWithValue("@id", id);
+                using (MySqlDataReader reader = cmd.ExecuteReader())
+                {
+                    if (reader.Read())
+                    {
+                        return new RouteModel
+                        {
+                            Id = reader["Id"].ToString(),
+                            TrainName = reader["TrainName"]?.ToString(),
+                            DepartureStationName = reader["DepartureStationName"]?.ToString(),
+                            ArrivalStationName = reader["ArrivalStationName"]?.ToString()
+                        };
+                    }
+                }
+            }
+            return null;
+        }
+
+        public bool DeleteRoute(int id)
+        {
+            string query = "DELETE FROM Routes WHERE Id = @id";
+            using (MySqlConnection connection = new MySqlConnection(connectionString))
+            {
+                connection.Open();
+                MySqlCommand cmd = new MySqlCommand(query, connection);
+                cmd.Parameters.AddWithValue("@id", id);
+                try
+                { 
+                    return cmd.ExecuteNonQuery() > 0; 
+                } catch (MySqlException ex)
+                {
+                    LastError = "Невозможно удалить маршрут: на нее ссылаются записи из других таблиц";
+                    return false;
+                }
+            }
+        }
+
+        // Добавление станции
+        public bool InsertStation(string name, string inn, string address)
+        {
+            LastError = null;
+            string query = "INSERT INTO Stations (Name, Inn, Address) VALUES (@name, @inn, @address)";
+            using (MySqlConnection connection = new MySqlConnection(connectionString))
+            {
+                connection.Open();
+                MySqlCommand cmd = new MySqlCommand(query, connection);
+                cmd.Parameters.AddWithValue("@name", name);
+                cmd.Parameters.AddWithValue("@inn", inn);
+                cmd.Parameters.AddWithValue("@address", address);
+                try
+                {
+                    return cmd.ExecuteNonQuery() > 0;
+                }
+                catch (MySqlException ex)
+                {
+                    LastError = "Ошибка при добавлении станции: " + ex.Message;
+                    return false;
+                }
+            }
+        }
+
+        // Добавление сотрудника
+        public bool InsertEmployee(int stationId, string fullName, int positionId, int crewId)
+        {
+            LastError = null;
+            string query = @"INSERT INTO Personnel (StationId, FullName, PositionId, CrewId) 
+                     VALUES (@stationId, @fullName, @positionId, @crewId)";
+            using (MySqlConnection connection = new MySqlConnection(connectionString))
+            {
+                connection.Open();
+                MySqlCommand cmd = new MySqlCommand(query, connection);
+                cmd.Parameters.AddWithValue("@stationId", stationId);
+                cmd.Parameters.AddWithValue("@fullName", fullName);
+                cmd.Parameters.AddWithValue("@positionId", positionId);
+                cmd.Parameters.AddWithValue("@crewId", crewId);
+                try
+                {
+                    return cmd.ExecuteNonQuery() > 0;
+                }
+                catch (MySqlException ex)
+                {
+                    LastError = "Ошибка при добавлении сотрудника: " + ex.Message;
+                    return false;
+                }
+            }
+        }
+
+        // Добавление маршрута
+        public bool InsertRoute(int ownerStationId, int trainId, int departureStationId,
+                                int arrivalStationId, TimeSpan departureTime, TimeSpan arrivalTime, int crewId)
+        {
+            LastError = null;
+            string query = @"INSERT INTO Routes (OwnerStationId, TrainId, DepartureStationId, ArrivalStationId, 
+                        DepartureTime, ArrivalTime, CrewId)
+                     VALUES (@ownerStationId, @trainId, @departureStationId, @arrivalStationId,
+                             @departureTime, @arrivalTime, @crewId)";
+            using (MySqlConnection connection = new MySqlConnection(connectionString))
+            {
+                connection.Open();
+                MySqlCommand cmd = new MySqlCommand(query, connection);
+                cmd.Parameters.AddWithValue("@ownerStationId", ownerStationId);
+                cmd.Parameters.AddWithValue("@trainId", trainId);
+                cmd.Parameters.AddWithValue("@departureStationId", departureStationId);
+                cmd.Parameters.AddWithValue("@arrivalStationId", arrivalStationId);
+                cmd.Parameters.AddWithValue("@departureTime", departureTime);
+                cmd.Parameters.AddWithValue("@arrivalTime", arrivalTime);
+                cmd.Parameters.AddWithValue("@crewId", crewId);
+                try
+                {
+                    return cmd.ExecuteNonQuery() > 0;
+                }
+                catch (MySqlException ex)
+                {
+                    LastError = "Ошибка при добавлении маршрута: " + ex.Message;
+                    return false;
+                }
+            }
+        }
+
+        public List<KeyValuePair<int, string>> GetStationsList()
+        {
+            var list = new List<KeyValuePair<int, string>>();
+            string query = "SELECT Id, Name FROM Stations";
+            using (MySqlConnection connection = new MySqlConnection(connectionString))
+            {
+                connection.Open();
+                MySqlCommand cmd = new MySqlCommand(query, connection);
+                using (MySqlDataReader reader = cmd.ExecuteReader())
+                {
+                    while (reader.Read())
+                        list.Add(new KeyValuePair<int, string>(Convert.ToInt32(reader["Id"]), reader["Name"].ToString()));
+                }
+            }
+            return list;
+        }
+
+        public List<KeyValuePair<int, string>> GetPositionsList()
+        {
+            var list = new List<KeyValuePair<int, string>>();
+            string query = "SELECT Id, Name FROM Positions";
+            using (MySqlConnection connection = new MySqlConnection(connectionString))
+            {
+                connection.Open();
+                MySqlCommand cmd = new MySqlCommand(query, connection);
+                using (MySqlDataReader reader = cmd.ExecuteReader())
+                {
+                    while (reader.Read())
+                        list.Add(new KeyValuePair<int, string>(Convert.ToInt32(reader["Id"]), reader["Name"].ToString()));
+                }
+            }
+            return list;
+        }
+
+        public List<KeyValuePair<int, string>> GetCrewsList()
+        {
+            var list = new List<KeyValuePair<int, string>>();
+            string query = "SELECT Id, Name FROM Crews";
+            using (MySqlConnection connection = new MySqlConnection(connectionString))
+            {
+                connection.Open();
+                MySqlCommand cmd = new MySqlCommand(query, connection);
+                using (MySqlDataReader reader = cmd.ExecuteReader())
+                {
+                    while (reader.Read())
+                        list.Add(new KeyValuePair<int, string>(Convert.ToInt32(reader["Id"]), reader["Name"].ToString()));
+                }
+            }
+            return list;
+        }
+
+
+        public List<KeyValuePair<int, string>> GetTrainsList()
+        {
+            var list = new List<KeyValuePair<int, string>>();
+            string query = "SELECT Id, Name FROM Trains";
+            using (MySqlConnection connection = new MySqlConnection(connectionString))
+            {
+                connection.Open();
+                MySqlCommand cmd = new MySqlCommand(query, connection);
+                using (MySqlDataReader reader = cmd.ExecuteReader())
+                {
+                    while (reader.Read())
+                        list.Add(new KeyValuePair<int, string>(Convert.ToInt32(reader["Id"]), reader["Name"].ToString()));
+                }
+            }
+            return list;
+        }
+
     }
 }

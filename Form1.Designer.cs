@@ -33,6 +33,11 @@
             Stations = new Button();
             label1 = new Label();
             Routes = new Button();
+            idForDelete = new TextBox();
+            Delete = new Button();
+            btnAddRoute = new Button();
+            btnAddEmployee = new Button();
+            btnAddStation = new Button();
             SuspendLayout();
             // 
             // flowLayoutPanel1
@@ -42,6 +47,7 @@
             flowLayoutPanel1.Name = "flowLayoutPanel1";
             flowLayoutPanel1.Size = new Size(800, 350);
             flowLayoutPanel1.TabIndex = 1;
+            flowLayoutPanel1.Paint += flowLayoutPanel1_Paint;
             // 
             // Employees
             // 
@@ -86,11 +92,68 @@
             Routes.UseVisualStyleBackColor = true;
             Routes.Click += Routes_Click;
             // 
+            // idForDelete
+            // 
+            idForDelete.Location = new Point(660, 572);
+            idForDelete.Name = "idForDelete";
+            idForDelete.PlaceholderText = "id удаляемой записи";
+            idForDelete.Size = new Size(150, 31);
+            idForDelete.TabIndex = 6;
+            // 
+            // Delete
+            // 
+            Delete.AutoSize = true;
+            Delete.Location = new Point(678, 627);
+            Delete.Name = "Delete";
+            Delete.Size = new Size(112, 35);
+            Delete.TabIndex = 7;
+            Delete.Text = "Удалить";
+            Delete.UseVisualStyleBackColor = true;
+            Delete.Click += Delete_Click;
+            // 
+            // btnAddRoute
+            // 
+            btnAddRoute.AutoSize = true;
+            btnAddRoute.Location = new Point(873, 524);
+            btnAddRoute.Name = "btnAddRoute";
+            btnAddRoute.Size = new Size(179, 35);
+            btnAddRoute.TabIndex = 8;
+            btnAddRoute.Text = "Добавить маршрут";
+            btnAddRoute.UseVisualStyleBackColor = true;
+            btnAddRoute.Click += btnAdd_Click;
+            // 
+            // btnAddEmployee
+            // 
+            btnAddEmployee.AutoSize = true;
+            btnAddEmployee.Location = new Point(863, 584);
+            btnAddEmployee.Name = "btnAddEmployee";
+            btnAddEmployee.Size = new Size(199, 35);
+            btnAddEmployee.TabIndex = 9;
+            btnAddEmployee.Text = "Добавить сотрудника";
+            btnAddEmployee.UseVisualStyleBackColor = true;
+            btnAddEmployee.Click += btnAddEmployee_Click;
+            // 
+            // btnAddStation
+            // 
+            btnAddStation.AutoSize = true;
+            btnAddStation.Location = new Point(877, 638);
+            btnAddStation.Name = "btnAddStation";
+            btnAddStation.Size = new Size(175, 35);
+            btnAddStation.TabIndex = 10;
+            btnAddStation.Text = "Добавить станцию";
+            btnAddStation.UseVisualStyleBackColor = true;
+            btnAddStation.Click += btnAddStation_Click;
+            // 
             // Form1
             // 
             AutoScaleDimensions = new SizeF(10F, 25F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(1373, 777);
+            Controls.Add(btnAddStation);
+            Controls.Add(btnAddEmployee);
+            Controls.Add(btnAddRoute);
+            Controls.Add(Delete);
+            Controls.Add(idForDelete);
             Controls.Add(Routes);
             Controls.Add(label1);
             Controls.Add(Stations);
@@ -109,5 +172,10 @@
         private Button Stations;
         private Label label1;
         private Button Routes;
+        private TextBox idForDelete;
+        private Button Delete;
+        private Button btnAddRoute;
+        private Button btnAddEmployee;
+        private Button btnAddStation;
     }
 }
